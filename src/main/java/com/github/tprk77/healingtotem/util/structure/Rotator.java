@@ -1,4 +1,4 @@
-package tprk77.util.structure;
+package com.github.tprk77.healingtotem.util.structure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,8 +109,8 @@ public enum Rotator {
 	public List<BlockOffset> getRotated(BlockOffset offset){
 		List<BlockOffset> rotoffsets = new ArrayList<BlockOffset>();
 
-		for(BlockOffset rotcount : this.rotlist){
-			rotoffsets.add(this.rotateXYZ(offset,
+		for(BlockOffset rotcount : rotlist){
+			rotoffsets.add(rotateXYZ(offset,
 							rotcount.x, rotcount.y, rotcount.z));
 		}
 
@@ -123,7 +123,7 @@ public enum Rotator {
 	 * @return The number of rotations.
 	 */
 	public int getNumberOfRotations(){
-		return this.rotlist.size();
+		return rotlist.size();
 	}
 
 	/**

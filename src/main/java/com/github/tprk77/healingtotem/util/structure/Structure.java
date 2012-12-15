@@ -1,4 +1,4 @@
-package tprk77.util.structure;
+package com.github.tprk77.healingtotem.util.structure;
 
 import java.util.HashSet;
 import java.util.List;
@@ -38,62 +38,62 @@ public class Structure {
 				for(BlockOffset offset : offsets){
 					Block possiblerootblock = block.getRelative(
 									-offset.x, -offset.y, -offset.z);
-					Set<Block> possibleblocks = this.verifyStructure(possiblestructuretype, possiblerootblock);
+					Set<Block> possibleblocks = verifyStructure(possiblestructuretype, possiblerootblock);
 
 					if(possibleblocks != null){
-						this.structuretype = possiblestructuretype;
-						this.rootblock = possiblerootblock;
-						this.blocks = possibleblocks;
+						structuretype = possiblestructuretype;
+						rootblock = possiblerootblock;
+						blocks = possibleblocks;
 						return;
 					}
 				}
 			}else{
 				// block might be the root block which is not part of the structure
-				Set<Block> possibleblocks = this.verifyStructure(possiblestructuretype, block);
+				Set<Block> possibleblocks = verifyStructure(possiblestructuretype, block);
 
 				if(possibleblocks != null){
-					this.structuretype = possiblestructuretype;
-					this.rootblock = block;
-					this.blocks = possibleblocks;
+					structuretype = possiblestructuretype;
+					rootblock = block;
+					blocks = possibleblocks;
 					return;
 				}
 			}
 		}
 
-		this.structuretype = null;
-		this.rootblock = null;
-		this.blocks = null;
+		structuretype = null;
+		rootblock = null;
+		blocks = null;
 	}
 
 	public StructureType getStructureType(){
-		return this.structuretype;
+		return structuretype;
 	}
 
 	public Block getRootBlock(){
-		return this.rootblock;
+		return rootblock;
 	}
 
 	public Set<Block> getBlocks(){
 		// defend against outisde adding/removing
-		return new HashSet<Block>(this.blocks);
+		return new HashSet<Block>(blocks);
 	}
 
 	public World getWorld(){
-		return this.rootblock.getWorld();
+		return rootblock.getWorld();
 	}
 
 	public boolean containsBlock(Block block){
-		return this.blocks.contains(block);
+		return blocks.contains(block);
 	}
 
 	public boolean verifyStructure(){
-		return (this.structuretype != null && this.rootblock != null && this.blocks != null);
+		return (structuretype != null && rootblock != null && blocks != null);
 	}
 
 	/*private void durp(){
 		// figure out rotations things
 
-		Map<BlockOffset, Material> pattern = this.structuretype.getPattern();
+		Map<BlockOffset, Material> pattern = structuretype.getPattern();
 		Map<BlockOffset, Material> rotpattern = new HashMap<BlockOffset, Material>();
 
 		for(BlockOffset offset)
@@ -112,20 +112,20 @@ public class Structure {
 	 */
 	/*private Block searchAtBlock(Block block){
 
-		Map<BlockOffset, Material> pattern = this.structuretype.getPattern();
+		Map<BlockOffset, Material> pattern = structuretype.getPattern();
 
 		if(!pattern.containsValue(block.getType())){
 			return null;
 		}
 
-		Map<Material, List<BlockOffset>> reversepattern = this.structuretype.getReversePattern();
+		Map<Material, List<BlockOffset>> reversepattern = structuretype.getReversePattern();
 		List<BlockOffset> offsets = reversepattern.get(block.getType());
 
 		for(BlockOffset offset : offsets){
 			Block possiblerootblock = block.getRelative(
 							-offset.x(), -offset.y, -offset.z);
 
-			if(this.verifyStructure(possiblerootblock) != null){
+			if(verifyStructure(possiblerootblock) != null){
 				return possiblerootblock;
 			}
 		}

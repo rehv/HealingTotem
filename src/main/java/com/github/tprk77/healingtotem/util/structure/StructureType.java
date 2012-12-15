@@ -1,4 +1,4 @@
-package tprk77.util.structure;
+package com.github.tprk77.healingtotem.util.structure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,8 +23,8 @@ public class StructureType {
 		private Map<Material, List<BlockOffset>> protoreversepattern;
 
 		public Prototype(){
-			this.protopattern = new HashMap<BlockOffset, Material>();
-			this.protoreversepattern = new EnumMap<Material, List<BlockOffset>>(Material.class);
+			protopattern = new HashMap<BlockOffset, Material>();
+			protoreversepattern = new EnumMap<Material, List<BlockOffset>>(Material.class);
 		}
 
 		public void addBlock(int x, int y, int z, Material material){
@@ -34,14 +34,14 @@ public class StructureType {
 				return;
 			}
 
-			this.protopattern.put(offset, material);
+			protopattern.put(offset, material);
 
 			List<BlockOffset> offsetlist;
-			if(this.protoreversepattern.containsKey(material)){
-				offsetlist = this.protoreversepattern.get(material);
+			if(protoreversepattern.containsKey(material)){
+				offsetlist = protoreversepattern.get(material);
 				offsetlist.add(offset);
 			}else{
-				this.protoreversepattern.put(material, new ArrayList<BlockOffset>(Arrays.asList(offset)));
+				protoreversepattern.put(material, new ArrayList<BlockOffset>(Arrays.asList(offset)));
 			}
 		}
 	}
@@ -55,29 +55,29 @@ public class StructureType {
 	private final Map<Material, List<BlockOffset>> reversepattern;
 
 	public StructureType(Prototype proto){
-		this.pattern = new HashMap<BlockOffset, Material>(proto.protopattern);
+		pattern = new HashMap<BlockOffset, Material>(proto.protopattern);
 		// we don't need to make new lists, because the are never public up to now
-		this.reversepattern = new EnumMap<Material, List<BlockOffset>>(proto.protoreversepattern);
+		reversepattern = new EnumMap<Material, List<BlockOffset>>(proto.protoreversepattern);
 	}
 
 	public int getBlockCount(){
-		return this.pattern.size();
+		return pattern.size();
 	}
 
 	public Set<Material> getMaterials(){
-		return this.reversepattern.keySet();
+		return reversepattern.keySet();
 	}
 
 	public Map<BlockOffset, Material> getPattern(){
 		// members of the hash are immutable, so this should be ok
-		return new HashMap<BlockOffset, Material>(this.pattern);
+		return new HashMap<BlockOffset, Material>(pattern);
 	}
 
 	public Map<Material, List<BlockOffset>> getReversePattern(){
 		// we need to make a new hash and new lists to protect the data
 		Map<Material, List<BlockOffset>> rp = new EnumMap<Material, List<BlockOffset>>(Material.class);
-		for(Material mat : this.reversepattern.keySet()){
-			rp.put(mat, new ArrayList<BlockOffset>(this.reversepattern.get(mat)));
+		for(Material mat : reversepattern.keySet()){
+			rp.put(mat, new ArrayList<BlockOffset>(reversepattern.get(mat)));
 		}
 		return rp;
 	}
@@ -90,8 +90,8 @@ public class StructureType {
 			prototypes.add(new Prototype());
 		}
 
-		for(BlockOffset offset : this.pattern.keySet()){
-			Material material = this.pattern.get(offset);
+		for(BlockOffset offset : pattern.keySet()){
+			Material material = pattern.get(offset);
 			List<BlockOffset> rotatedoffsets = rotator.getRotated(offset);
 
 			for(int i = 0; i < rotator.getNumberOfRotations(); i++){
@@ -111,8 +111,8 @@ public class StructureType {
 	@Override
 	public String toString(){
 		String s = "";
-		for(BlockOffset b : this.pattern.keySet()){
-			Material m = this.pattern.get(b);
+		for(BlockOffset b : pattern.keySet()){
+			Material m = pattern.get(b);
 			s = s + "{x: " + b.x + ", y: " + b.y + ", z: " + b.z + ", type: " + m + "}, ";
 		}
 		return "[" + s + "]";

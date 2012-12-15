@@ -1,11 +1,11 @@
 name: HealingTotem
-main: tprk77.healingtotem.HTPlugin
-version: 0.8.1
-author: tprk77
+main: com.github.tprk77.healingtotem.HTPlugin
+version: 0.8.2
+author: tprk77, Rehv
 description: Health Regeneration from Totem Poles!
 permissions:
   healingtotem.*:
-    discription: gives access to all normal healingtotem permissions
+    description: gives access to all normal healingtotem permissions
     children:
       healingtotem.build: true
       healingtotem.break: true

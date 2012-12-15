@@ -1,0 +1,15 @@
+lightning: true
+tamedwolf:
+    stackedheal: 4
+    stackeddamage: 4
+player:
+    stackedheal: 4
+    stackeddamage: 4
+mob:
+    stackedheal: 4
+    stackeddamage: 4
+angrywolf:
+    stackedheal: 4
+    stackeddamage: 4
+quiet: false
+totemsperplayer: 100

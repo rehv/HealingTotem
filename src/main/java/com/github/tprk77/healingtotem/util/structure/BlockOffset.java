@@ -1,4 +1,4 @@
-package tprk77.util.structure;
+package com.github.tprk77.healingtotem.util.structure;
 
 import org.bukkit.block.Block;
 
@@ -22,39 +22,39 @@ public final class BlockOffset {
 	}
 
 	public BlockOffset(BlockOffset offset){
-		this.x = offset.x;
-		this.y = offset.y;
-		this.z = offset.z;
+		x = offset.x;
+		y = offset.y;
+		z = offset.z;
 	}
 
 	public BlockOffset(Block block){
-		this.x = block.getX();
-		this.y = block.getY();
-		this.z = block.getZ();
+		x = block.getX();
+		y = block.getY();
+		z = block.getZ();
 	}
 
 	public int getX(){
-		return this.x;
+		return x;
 	}
 
 	public int getY(){
-		return this.y;
+		return y;
 	}
 
 	public int getZ(){
-		return this.z;
+		return z;
 	}
 
 	public BlockOffset add(BlockOffset o){
-		return new BlockOffset(this.x + o.x, this.y + o.y, this.z + o.z);
+		return new BlockOffset(x + o.x, y + o.y, z + o.z);
 	}
 
 	public BlockOffset subtract(BlockOffset o){
-		return new BlockOffset(this.x - o.x, this.y - o.y, this.z - o.z);
+		return new BlockOffset(x - o.x, y - o.y, z - o.z);
 	}
 
 	@Override
 	public String toString(){
-		return "<" + this.x + ", " + this.y + ", " + this.z + ">";
+		return "<" + x + ", " + y + ", " + z + ">";
 	}
 }

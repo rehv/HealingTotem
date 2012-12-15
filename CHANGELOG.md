@@ -1,0 +1,1 @@
+# HealingTotem plugin changelog summary
