@@ -1,6 +1,6 @@
 name: HealingTotem
 main: com.github.tprk77.healingtotem.HTPlugin
-version: 0.8.2
+version: 0.8.3
 author: tprk77, Rehv
 description: Health Regeneration from Totem Poles!
 permissions:
