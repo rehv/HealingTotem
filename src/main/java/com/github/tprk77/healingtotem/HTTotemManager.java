@@ -281,7 +281,9 @@ public class HTTotemManager {
             i++;
         }
 
-        plugin.getLogger().info("Saved " + totems.size() + " totems");
+        if (!plugin.getConfigManager().isQuiet()) {
+            plugin.getLogger().info("Saved " + totems.size() + " totems");
+        }
 
         try {
             config.save(totemsFile);
