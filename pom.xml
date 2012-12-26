@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.tprk77</groupId>
   <artifactId>HealingTotem</artifactId>
-  <version>0.8.3</version>
+  <version>0.8.4-SNAPSHOT</version>
   <name>HealingTotem</name>
   <description>Health Regeneration from totem poles, for Bukkit!</description>
   <properties>
