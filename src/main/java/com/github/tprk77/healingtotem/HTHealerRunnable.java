@@ -266,7 +266,7 @@ public class HTHealerRunnable implements Runnable {
         BukkitScheduler scheduler = plugin.getServer().getScheduler();
         taskID = scheduler.scheduleSyncRepeatingTask(plugin, this, 0, period);
         if(taskID == -1){
-            plugin.getLogger().warning("failed to schedule!");
+            plugin.getLogger().warning("Failed to schedule!");
         }
     }
 

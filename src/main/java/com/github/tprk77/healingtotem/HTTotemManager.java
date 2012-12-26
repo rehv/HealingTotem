@@ -154,19 +154,16 @@ public class HTTotemManager {
             if(totemType != null){
                 totemTypes.add(totemType);
             }
+            else {
+                plugin.getLogger().warning("A totem type could not be loaded.");
+            }
         }
         plugin.getLogger().info("Loaded "+totemTypes.size()+" totem types.");
     }
 
     private void saveDefaultTotemTypes() {
         File totemTypesFile = new File (plugin.getDataFolder(), totemTypesFilename);
-        YamlConfiguration config = new YamlConfiguration();
-
-        try {
-            config.load(totemTypesFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(totemTypesFile);
         
         TotemType totemType;
         StructureType structureType;
@@ -253,26 +250,18 @@ public class HTTotemManager {
         try {
             config.save(totemTypesFile);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            plugin.getLogger().warning("Could not save file " + totemTypesFile.getName());
             e.printStackTrace();
         }
     }
     
     protected void saveTotems() {
         File totemsFile = new File(plugin.getDataFolder(), totemsFilename);
-        YamlConfiguration config = new YamlConfiguration();
-        try {
-            config.load(totemsFile);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } 
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(totemsFile);
 
         int i=0;
         config.createSection("totems");
         ConfigurationSection totemsSection = config.getConfigurationSection("totems"); 
-        
-        config.options().copyDefaults(true);
         
         for(Totem totem : totems){
             totemsSection.createSection("totem"+Integer.toString(i));
@@ -288,7 +277,7 @@ public class HTTotemManager {
         try {
             config.save(totemsFile);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            plugin.getLogger().warning("Could not save file " + totemsFile.getName());
             e.printStackTrace();
         }
     }
@@ -302,13 +291,14 @@ public class HTTotemManager {
                 config.createSection("totems");
                 config.save(totemsFile);
             } catch (Exception e) {
+                plugin.getLogger().warning("Could not create file " + totemsFile.getName());
                 e.printStackTrace();
             }
         }
         try {
             config.load(totemsFile);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
+            plugin.getLogger().warning("Could not load file " + totemsFile.getName());
             e.printStackTrace();
         }
                
@@ -320,6 +310,9 @@ public class HTTotemManager {
             Totem totem = loadYamlTotem(totemSection);
             if (totem != null) {
                 addTotem(totem);
+            }
+            else {
+                plugin.getLogger().warning("A totem could not be loaded.");
             }
         }
 
@@ -342,6 +335,7 @@ public class HTTotemManager {
     private Totem loadYamlTotem(ConfigurationSection totemSection) {
         String worldName = totemSection.getString("world");
         if (worldName == null) {
+            plugin.getLogger().warning(totemSection.getName()+"'s world is not set.");
             return null;
         }
         
@@ -349,11 +343,13 @@ public class HTTotemManager {
         int y = totemSection.getInt("y", Integer.MIN_VALUE);
         int z = totemSection.getInt("z", Integer.MIN_VALUE);
         if(x == Integer.MIN_VALUE || y == Integer.MIN_VALUE || z == Integer.MIN_VALUE){
+            plugin.getLogger().warning(totemSection.getName()+"'s x, y or z is not set.");
             return null;
         }
         
         String totemTypeName = totemSection.getString("type");
         if(totemTypeName == null){
+            plugin.getLogger().warning(totemSection.getName()+"'s type is not set.");
             return null;
         }
 
@@ -361,12 +357,13 @@ public class HTTotemManager {
 
         World world = plugin.getServer().getWorld(worldName);
         if(world == null){
-            plugin.getLogger().warning("Totem's world is not recognized");
+            plugin.getLogger().warning(totemSection.getName()+"'s world is invalid.");
             return null;
         }
 
         TotemType totemType = getTotemType(totemTypeName);
         if(totemType == null){
+            plugin.getLogger().warning(totemSection.getName()+"'s type is invalid.");
             return null;
         }
 
@@ -374,6 +371,7 @@ public class HTTotemManager {
         Totem totem = new Totem(totemType, block, owner);
 
         if(!totem.verifyStructure()){
+            plugin.getLogger().warning(totemSection.getName()+"'s structure is invalid.");
             return null;
         }
 
@@ -434,31 +432,37 @@ public class HTTotemManager {
         
         int power = totemSection.getInt("power", Integer.MIN_VALUE);
         if (power == Integer.MIN_VALUE) {
+            plugin.getLogger().warning(totemSection.getName()+"'s power is not set.");
             return null;
         }
         
         double range = totemSection.getDouble("range");
         if (Double.isNaN(range)) {
+            plugin.getLogger().warning(totemSection.getName()+"'s range is not set.");
             return null;    
         }
         
         String rotatorString = totemSection.getString("rotator");
         if (rotatorString == null) {
-            rotatorString = "";
+            rotatorString = "NULL";
+            plugin.getLogger().warning(totemSection.getName()+"'s rotator is not set.");
         }
         
         Rotator rotator = Rotator.matchRotator(rotatorString);
         if (rotator == null) {
+            plugin.getLogger().warning(totemSection.getName()+"'s power is invalid, using default.");
             rotator = Rotator.getDefault();
         }
         
         ConfigurationSection structureSection = totemSection.getConfigurationSection("structure");
         StructureType structureType = loadYamlStructure(structureSection);
         if (structureType == null) {
+            plugin.getLogger().warning(totemSection.getName()+"'s structure is invalid.");
             return null;
         }
         
         if (structureType.getBlockCount() < 3) {
+            plugin.getLogger().warning("For technical reasons, "+totemSection.getName()+"'s structure block count must be at least 3.");
             return null;
         }
         
@@ -479,16 +483,19 @@ public class HTTotemManager {
             int y = blockSection.getInt("y", Integer.MIN_VALUE);
             int z = blockSection.getInt("z", Integer.MIN_VALUE);
             if(x == Integer.MIN_VALUE || y == Integer.MIN_VALUE || z == Integer.MIN_VALUE){
+                plugin.getLogger().warning(blockSection.getName()+"'s x, y or z is not set.");
                 return null;
             }
             
             String materialName = blockSection.getString("material");
             if (materialName == null) {
+                plugin.getLogger().warning(blockSection.getName()+"'s material is not set.");
                 return null;
             }
             
             Material material = Material.matchMaterial(materialName);
             if (material == null) {
+                plugin.getLogger().warning(blockSection.getName()+"'s material is invalid.");
                 return null;
             }
             

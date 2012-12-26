@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
@@ -63,73 +62,30 @@ public class HTConfigManager {
     private void loadConfig(){
 
         File configfile = new File(plugin.getDataFolder(), filename);
-        FileConfiguration conf = new YamlConfiguration();
-        try {
-            conf.load(configfile);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } 
+        YamlConfiguration conf = YamlConfiguration.loadConfiguration(configfile);
 
         totemsperplayer = conf.getInt("totemsperplayer", totemsperplayer);
         lightning = conf.getBoolean("lightning", def_lightning);
         quiet = conf.getBoolean("quiet", def_quiet);
                 
-        if (conf.isInt("player.stackedheal")) {
-            playerstackedheal = conf.getInt("player.stackedheal", def_stackedheal);
-        } else {
-            playerstackedheal = def_stackedheal;
-        }
-        if (conf.isInt("player.stackeddamage")) {
-            playerstackeddamage = conf.getInt("player.stackeddamage", def_stackeddamage);
-        } else {
-            playerstackeddamage = def_stackeddamage;
-        }
+        playerstackedheal = conf.getInt("player.stackedheal", def_stackedheal);
+        playerstackeddamage = conf.getInt("player.stackeddamage", def_stackeddamage);
+
+        mobstackedheal = conf.getInt("mob.stackedheal", def_stackedheal);
+        mobstackeddamage = conf.getInt("mob.stackeddamage", def_stackeddamage);
         
-        if (conf.isInt("mob.stackedheal")) {
-            mobstackedheal = conf.getInt("mob.stackedheal", def_stackedheal);
-        } else {
-            mobstackedheal = def_stackedheal;
-        }
-        if (conf.isInt("mob.stackeddamage")) {
-            mobstackeddamage = conf.getInt("mob.stackeddamage", def_stackeddamage);
-        } else {
-            mobstackeddamage = def_stackeddamage;
-        }
+        tamedwolfstackedheal = conf.getInt("tamedwolf.stackedheal", def_stackedheal);
+        tamedwolfstackeddamage = conf.getInt("tamedwolf.stackeddamage", def_stackeddamage);
         
-        if (conf.isInt("tamedwolf.stackedheal")) {
-            tamedwolfstackedheal = conf.getInt("tamedwolf.stackedheal", def_stackedheal);
-        } else {
-            tamedwolfstackedheal = def_stackedheal;
-        }
-        if (conf.isInt("tamedwolf.stackeddamage")) {
-            tamedwolfstackeddamage = conf.getInt("tamedwolf.stackeddamage", def_stackeddamage);
-        } else {
-            tamedwolfstackeddamage = def_stackeddamage;
-        }
-        
-        if (conf.isInt("angrywolf.stackedheal")) {
-            angrywolfstackedheal = conf.getInt("angrywolf.stackedheal", def_stackedheal);
-        } else {
-            angrywolfstackedheal = def_stackedheal;
-        }
-        if (conf.isInt("angrywolf.stackeddamage")) {
-            angrywolfstackeddamage = conf.getInt("angrywolf.stackeddamage", def_stackeddamage);
-        } else {
-            angrywolfstackeddamage = def_stackeddamage;
-        }
+        angrywolfstackedheal = conf.getInt("angrywolf.stackedheal", def_stackedheal);
+        angrywolfstackeddamage = conf.getInt("angrywolf.stackeddamage", def_stackeddamage);
     }
 
     private void saveDefaultConfig(){
 
         File configfile = new File(plugin.getDataFolder(), filename);
-        FileConfiguration conf = new YamlConfiguration();
-        try {
-            conf.load(configfile);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } 
+        YamlConfiguration conf = YamlConfiguration.loadConfiguration(configfile);
+
 
         HashMap<String, Object> yamlmap = new HashMap<String, Object>();
         conf.options().copyDefaults(true);
@@ -161,7 +117,7 @@ public class HTConfigManager {
         try {
             conf.save(configfile);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            plugin.getLogger().warning("Could not save file " + configfile.getName());
             e.printStackTrace();
         }
     }
