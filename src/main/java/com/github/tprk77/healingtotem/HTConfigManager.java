@@ -1,6 +1,5 @@
 package com.github.tprk77.healingtotem;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -8,7 +7,7 @@ import java.util.HashMap;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
- *
+ * 
  * @author tim
  */
 public class HTConfigManager {
@@ -39,19 +38,19 @@ public class HTConfigManager {
     private int angrywolfstackedheal;
     private int angrywolfstackeddamage;
 
-    public HTConfigManager(HTPlugin plugin){
+    public HTConfigManager(HTPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public void loadConfigOrDefault(){
+    public void loadConfigOrDefault() {
 
-        File configfile = new File(plugin.getDataFolder(), filename);
-        if(!configfile.isFile()){
-            try{
+        final File configfile = new File(plugin.getDataFolder(), filename);
+        if (!configfile.isFile()) {
+            try {
                 configfile.getParentFile().mkdirs();
                 configfile.createNewFile();
                 saveDefaultConfig();
-            }catch(Exception ex){
+            } catch (final Exception ex) {
                 plugin.getLogger().warning("Could not create file " + configfile.getName());
             }
         }
@@ -59,33 +58,32 @@ public class HTConfigManager {
         loadConfig();
     }
 
-    private void loadConfig(){
+    private void loadConfig() {
 
-        File configfile = new File(plugin.getDataFolder(), filename);
-        YamlConfiguration conf = YamlConfiguration.loadConfiguration(configfile);
+        final File configfile = new File(plugin.getDataFolder(), filename);
+        final YamlConfiguration conf = YamlConfiguration.loadConfiguration(configfile);
 
         totemsperplayer = conf.getInt("totemsperplayer", totemsperplayer);
         lightning = conf.getBoolean("lightning", def_lightning);
         quiet = conf.getBoolean("quiet", def_quiet);
-                
+
         playerstackedheal = conf.getInt("player.stackedheal", def_stackedheal);
         playerstackeddamage = conf.getInt("player.stackeddamage", def_stackeddamage);
 
         mobstackedheal = conf.getInt("mob.stackedheal", def_stackedheal);
         mobstackeddamage = conf.getInt("mob.stackeddamage", def_stackeddamage);
-        
+
         tamedwolfstackedheal = conf.getInt("tamedwolf.stackedheal", def_stackedheal);
         tamedwolfstackeddamage = conf.getInt("tamedwolf.stackeddamage", def_stackeddamage);
-        
+
         angrywolfstackedheal = conf.getInt("angrywolf.stackedheal", def_stackedheal);
         angrywolfstackeddamage = conf.getInt("angrywolf.stackeddamage", def_stackeddamage);
     }
 
-    private void saveDefaultConfig(){
+    private void saveDefaultConfig() {
 
-        File configfile = new File(plugin.getDataFolder(), filename);
-        YamlConfiguration conf = YamlConfiguration.loadConfiguration(configfile);
-
+        final File configfile = new File(plugin.getDataFolder(), filename);
+        final YamlConfiguration conf = YamlConfiguration.loadConfiguration(configfile);
 
         HashMap<String, Object> yamlmap = new HashMap<String, Object>();
         conf.options().copyDefaults(true);
@@ -116,54 +114,53 @@ public class HTConfigManager {
 
         try {
             conf.save(configfile);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             plugin.getLogger().warning("Could not save file " + configfile.getName());
             e.printStackTrace();
         }
     }
 
-    public boolean isLightning(){
+    public boolean isLightning() {
         return lightning;
     }
 
-    public boolean isQuiet(){
+    public boolean isQuiet() {
         return quiet;
     }
 
-    public int getTotemsPerPlayer(){
+    public int getTotemsPerPlayer() {
         return totemsperplayer;
     }
 
-    public int getPlayerStackedHeal(){
+    public int getPlayerStackedHeal() {
         return playerstackedheal;
     }
 
-    public int getMobStackedHeal(){
+    public int getMobStackedHeal() {
         return mobstackedheal;
     }
 
-    public int getTamedWolfStackedHeal(){
+    public int getTamedWolfStackedHeal() {
         return tamedwolfstackedheal;
     }
 
-    public int getAngryWolfStackedHeal(){
+    public int getAngryWolfStackedHeal() {
         return angrywolfstackedheal;
     }
 
-    public int getPlayerStackedDamage(){
+    public int getPlayerStackedDamage() {
         return playerstackeddamage;
     }
 
-    public int getMobStackedDamage(){
+    public int getMobStackedDamage() {
         return mobstackeddamage;
     }
 
-    public int getTamedWolfStackedDamage(){
+    public int getTamedWolfStackedDamage() {
         return tamedwolfstackeddamage;
     }
 
-    public int getAngryWolfStackedDamage(){
+    public int getAngryWolfStackedDamage() {
         return angrywolfstackeddamage;
     }
 }
-

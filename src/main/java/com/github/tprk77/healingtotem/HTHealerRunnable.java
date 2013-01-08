@@ -18,7 +18,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import com.github.tprk77.healingtotem.totemdao.Totem;
 
 /**
- *
+ * 
  * @author tim
  */
 public class HTHealerRunnable implements Runnable {
@@ -37,7 +37,7 @@ public class HTHealerRunnable implements Runnable {
         private final int stackeddamage;
         private final int maxhealth;
 
-        public LivingEntityProcessor(PluginManager eventcaller, int stackedheal, int stackeddamage, int maxhealth){
+        public LivingEntityProcessor(PluginManager eventcaller, int stackedheal, int stackeddamage, int maxhealth) {
             this.eventcaller = eventcaller;
             this.stackedheal = stackedheal;
             this.stackeddamage = stackeddamage;
@@ -46,17 +46,17 @@ public class HTHealerRunnable implements Runnable {
 
         public abstract boolean process(LivingEntity entity, List<Totem> totems);
 
-        protected int sumTotemEffectivePower(LivingEntity entity, List<Totem> totems){
+        protected int sumTotemEffectivePower(LivingEntity entity, List<Totem> totems) {
             int power = 0;
-            for(Totem totem : totems){
-                if(totem.inRange(entity)){
+            for (final Totem totem : totems) {
+                if (totem.inRange(entity)) {
                     power += totem.getEffectivePower(entity);
                 }
             }
             return power;
         }
 
-        protected void applyHeal(LivingEntity entity, int power){
+        protected void applyHeal(LivingEntity entity, int power) {
 
             /*
              * Only let the events be cancelled. For now don't let the event modify
@@ -66,67 +66,65 @@ public class HTHealerRunnable implements Runnable {
              * Then again... Maybe I'll change my mind.
              */
 
-            if(power > stackedheal){
+            if (power > stackedheal) {
                 power = stackedheal;
-            }else if(power < -stackeddamage){
+            } else if (power < -stackeddamage) {
                 power = -stackeddamage;
             }
 
-            int health = entity.getHealth();
+            final int health = entity.getHealth();
 
-            if(power > 0){
-                EntityRegainHealthEvent regen = new EntityRegainHealthEvent(
-                                entity, power, EntityRegainHealthEvent.RegainReason.CUSTOM);
+            if (power > 0) {
+                final EntityRegainHealthEvent regen = new EntityRegainHealthEvent(entity, power, EntityRegainHealthEvent.RegainReason.CUSTOM);
                 eventcaller.callEvent(regen);
-                if(regen.isCancelled()){
+                if (regen.isCancelled()) {
                     return;
                 }
-            }else if(power < 0){
-                EntityDamageEvent damage = new EntityDamageEvent(
-                                entity, EntityDamageEvent.DamageCause.CUSTOM, -power);
+            } else if (power < 0) {
+                final EntityDamageEvent damage = new EntityDamageEvent(entity, EntityDamageEvent.DamageCause.CUSTOM, -power);
                 eventcaller.callEvent(damage);
-                if(damage.isCancelled()){
+                if (damage.isCancelled()) {
                     return;
                 }
-            }else{
+            } else {
                 return;
             }
 
             int newhealth = health + power;
-            if(newhealth > maxhealth){
+            if (newhealth > maxhealth) {
                 newhealth = maxhealth;
             }
 
-            if(newhealth > health){
+            if (newhealth > health) {
                 entity.setHealth(newhealth);
-            }else if(newhealth < health){
+            } else if (newhealth < health) {
                 entity.damage(-power);
             }
         }
     }
 
-    HTHealerRunnable(HTPlugin plugin){
+    HTHealerRunnable(HTPlugin plugin) {
         this.plugin = plugin;
         processors = new ArrayList<LivingEntityProcessor>();
 
         LivingEntityProcessor processor;
 
         // for players
-        processor = new LivingEntityProcessor(
-                        plugin.getServer().getPluginManager(),
-                        plugin.getConfigManager().getPlayerStackedHeal(),
-                        plugin.getConfigManager().getPlayerStackedDamage(),
-                        20){
+        processor = new LivingEntityProcessor(plugin.getServer().getPluginManager(), plugin.getConfigManager().getPlayerStackedHeal(), plugin.getConfigManager().getPlayerStackedDamage(), 20) {
             @Override
-            public boolean process(LivingEntity entity, List<Totem> totems){
-                if(!(entity instanceof Player)) return false;
-                Player player = (Player) entity;
-                boolean canbehealed = player.hasPermission("healingtotem.heal");
-                boolean canbedamaged = player.hasPermission("healingtotem.damage");
-                if(!canbehealed && !canbedamaged) return false;
+            public boolean process(LivingEntity entity, List<Totem> totems) {
+                if (!(entity instanceof Player))
+                    return false;
+                final Player player = (Player) entity;
+                final boolean canbehealed = player.hasPermission("healingtotem.heal");
+                final boolean canbedamaged = player.hasPermission("healingtotem.damage");
+                if (!canbehealed && !canbedamaged)
+                    return false;
                 int power = sumTotemEffectivePower(entity, totems);
-                if(power > 0 && !canbehealed) power = 0;
-                if(power < 0 && !canbedamaged) power = 0;
+                if (power > 0 && !canbehealed)
+                    power = 0;
+                if (power < 0 && !canbedamaged)
+                    power = 0;
                 applyHeal(entity, power);
                 return true;
             }
@@ -134,15 +132,12 @@ public class HTHealerRunnable implements Runnable {
         processors.add(processor);
 
         // for monsters
-        processor = new LivingEntityProcessor(
-                        plugin.getServer().getPluginManager(),
-                        plugin.getConfigManager().getMobStackedHeal(),
-                        plugin.getConfigManager().getMobStackedDamage(),
-                        20){
+        processor = new LivingEntityProcessor(plugin.getServer().getPluginManager(), plugin.getConfigManager().getMobStackedHeal(), plugin.getConfigManager().getMobStackedDamage(), 20) {
             @Override
-            public boolean process(LivingEntity entity, List<Totem> totems){
-                if(!(entity instanceof Monster)) return false;
-                int power = sumTotemEffectivePower(entity, totems);
+            public boolean process(LivingEntity entity, List<Totem> totems) {
+                if (!(entity instanceof Monster))
+                    return false;
+                final int power = sumTotemEffectivePower(entity, totems);
                 applyHeal(entity, power);
                 return true;
             }
@@ -150,15 +145,12 @@ public class HTHealerRunnable implements Runnable {
         processors.add(processor);
 
         // ghasts are not technically monsters, but they are now...
-        processor = new LivingEntityProcessor(
-                        plugin.getServer().getPluginManager(),
-                        plugin.getConfigManager().getMobStackedHeal(),
-                        plugin.getConfigManager().getMobStackedDamage(),
-                        10){
+        processor = new LivingEntityProcessor(plugin.getServer().getPluginManager(), plugin.getConfigManager().getMobStackedHeal(), plugin.getConfigManager().getMobStackedDamage(), 10) {
             @Override
-            public boolean process(LivingEntity entity, List<Totem> totems){
-                if(!(entity instanceof Ghast)) return false;
-                int power = sumTotemEffectivePower(entity, totems);
+            public boolean process(LivingEntity entity, List<Totem> totems) {
+                if (!(entity instanceof Ghast))
+                    return false;
+                final int power = sumTotemEffectivePower(entity, totems);
                 applyHeal(entity, power);
                 return true;
             }
@@ -166,15 +158,12 @@ public class HTHealerRunnable implements Runnable {
         processors.add(processor);
 
         // for huge slimes (and bigger)
-        processor = new LivingEntityProcessor(
-                        plugin.getServer().getPluginManager(),
-                        plugin.getConfigManager().getMobStackedHeal(),
-                        plugin.getConfigManager().getMobStackedDamage(),
-                        32){
+        processor = new LivingEntityProcessor(plugin.getServer().getPluginManager(), plugin.getConfigManager().getMobStackedHeal(), plugin.getConfigManager().getMobStackedDamage(), 32) {
             @Override
-            public boolean process(LivingEntity entity, List<Totem> totems){
-                if(!(entity instanceof Slime && ((Slime)entity).getSize() >= 8)) return false;
-                int power = sumTotemEffectivePower(entity, totems);
+            public boolean process(LivingEntity entity, List<Totem> totems) {
+                if (!(entity instanceof Slime && ((Slime) entity).getSize() >= 8))
+                    return false;
+                final int power = sumTotemEffectivePower(entity, totems);
                 applyHeal(entity, power);
                 return true;
             }
@@ -182,15 +171,12 @@ public class HTHealerRunnable implements Runnable {
         processors.add(processor);
 
         // for big slimes
-        processor = new LivingEntityProcessor(
-                        plugin.getServer().getPluginManager(),
-                        plugin.getConfigManager().getMobStackedHeal(),
-                        plugin.getConfigManager().getMobStackedDamage(),
-                        16){
+        processor = new LivingEntityProcessor(plugin.getServer().getPluginManager(), plugin.getConfigManager().getMobStackedHeal(), plugin.getConfigManager().getMobStackedDamage(), 16) {
             @Override
-            public boolean process(LivingEntity entity, List<Totem> totems){
-                if(!(entity instanceof Slime && ((Slime)entity).getSize() >= 4 && ((Slime)entity).getSize() < 8)) return false;
-                int power = sumTotemEffectivePower(entity, totems);
+            public boolean process(LivingEntity entity, List<Totem> totems) {
+                if (!(entity instanceof Slime && ((Slime) entity).getSize() >= 4 && ((Slime) entity).getSize() < 8))
+                    return false;
+                final int power = sumTotemEffectivePower(entity, totems);
                 applyHeal(entity, power);
                 return true;
             }
@@ -198,15 +184,12 @@ public class HTHealerRunnable implements Runnable {
         processors.add(processor);
 
         // for small slimes
-        processor = new LivingEntityProcessor(
-                        plugin.getServer().getPluginManager(),
-                        plugin.getConfigManager().getMobStackedHeal(),
-                        plugin.getConfigManager().getMobStackedDamage(),
-                        4){
+        processor = new LivingEntityProcessor(plugin.getServer().getPluginManager(), plugin.getConfigManager().getMobStackedHeal(), plugin.getConfigManager().getMobStackedDamage(), 4) {
             @Override
-            public boolean process(LivingEntity entity, List<Totem> totems){
-                if(!(entity instanceof Slime && ((Slime)entity).getSize() >= 2 && ((Slime)entity).getSize() < 4)) return false;
-                int power = sumTotemEffectivePower(entity, totems);
+            public boolean process(LivingEntity entity, List<Totem> totems) {
+                if (!(entity instanceof Slime && ((Slime) entity).getSize() >= 2 && ((Slime) entity).getSize() < 4))
+                    return false;
+                final int power = sumTotemEffectivePower(entity, totems);
                 applyHeal(entity, power);
                 return true;
             }
@@ -214,15 +197,12 @@ public class HTHealerRunnable implements Runnable {
         processors.add(processor);
 
         // for tiny slimes
-        processor = new LivingEntityProcessor(
-                        plugin.getServer().getPluginManager(),
-                        plugin.getConfigManager().getMobStackedHeal(),
-                        plugin.getConfigManager().getMobStackedDamage(),
-                        1){
+        processor = new LivingEntityProcessor(plugin.getServer().getPluginManager(), plugin.getConfigManager().getMobStackedHeal(), plugin.getConfigManager().getMobStackedDamage(), 1) {
             @Override
-            public boolean process(LivingEntity entity, List<Totem> totems){
-                if(!(entity instanceof Slime && ((Slime)entity).getSize() < 2)) return false;
-                int power = sumTotemEffectivePower(entity, totems);
+            public boolean process(LivingEntity entity, List<Totem> totems) {
+                if (!(entity instanceof Slime && ((Slime) entity).getSize() < 2))
+                    return false;
+                final int power = sumTotemEffectivePower(entity, totems);
                 applyHeal(entity, power);
                 return true;
             }
@@ -230,15 +210,12 @@ public class HTHealerRunnable implements Runnable {
         processors.add(processor);
 
         // for tamed wolves
-        processor = new LivingEntityProcessor(
-                        plugin.getServer().getPluginManager(),
-                        plugin.getConfigManager().getTamedWolfStackedHeal(),
-                        plugin.getConfigManager().getTamedWolfStackedDamage(),
-                        20){
+        processor = new LivingEntityProcessor(plugin.getServer().getPluginManager(), plugin.getConfigManager().getTamedWolfStackedHeal(), plugin.getConfigManager().getTamedWolfStackedDamage(), 20) {
             @Override
-            public boolean process(LivingEntity entity, List<Totem> totems){
-                if(!(entity instanceof Wolf) || !((Wolf) entity).isTamed()) return false;
-                int power = sumTotemEffectivePower(entity, totems);
+            public boolean process(LivingEntity entity, List<Totem> totems) {
+                if (!(entity instanceof Wolf) || !((Wolf) entity).isTamed())
+                    return false;
+                final int power = sumTotemEffectivePower(entity, totems);
                 applyHeal(entity, power);
                 return true;
             }
@@ -246,15 +223,12 @@ public class HTHealerRunnable implements Runnable {
         processors.add(processor);
 
         // for angry wolves
-        processor = new LivingEntityProcessor(
-                        plugin.getServer().getPluginManager(),
-                        plugin.getConfigManager().getAngryWolfStackedHeal(),
-                        plugin.getConfigManager().getAngryWolfStackedDamage(),
-                        8){
+        processor = new LivingEntityProcessor(plugin.getServer().getPluginManager(), plugin.getConfigManager().getAngryWolfStackedHeal(), plugin.getConfigManager().getAngryWolfStackedDamage(), 8) {
             @Override
-            public boolean process(LivingEntity entity, List<Totem> totems){
-                if(!(entity instanceof Wolf) || !((Wolf) entity).isAngry()) return false;
-                int power = sumTotemEffectivePower(entity, totems);
+            public boolean process(LivingEntity entity, List<Totem> totems) {
+                if (!(entity instanceof Wolf) || !((Wolf) entity).isAngry())
+                    return false;
+                final int power = sumTotemEffectivePower(entity, totems);
                 applyHeal(entity, power);
                 return true;
             }
@@ -262,29 +236,30 @@ public class HTHealerRunnable implements Runnable {
         processors.add(processor);
     }
 
-    public void schedule(){
-        BukkitScheduler scheduler = plugin.getServer().getScheduler();
+    public void schedule() {
+        final BukkitScheduler scheduler = plugin.getServer().getScheduler();
         taskID = scheduler.scheduleSyncRepeatingTask(plugin, this, 0, period);
-        if(taskID == -1){
+        if (taskID == -1) {
             plugin.getLogger().warning("Failed to schedule!");
         }
     }
 
-    public void cancel(){
-        BukkitScheduler scheduler = plugin.getServer().getScheduler();
+    public void cancel() {
+        final BukkitScheduler scheduler = plugin.getServer().getScheduler();
         scheduler.cancelTask(taskID);
     }
 
-    public void run(){
+    public void run() {
 
-        List<Totem> totems = plugin.getTotemManager().getTotems();
-        List<World> worlds = plugin.getServer().getWorlds();
+        final List<Totem> totems = plugin.getTotemManager().getTotems();
+        final List<World> worlds = plugin.getServer().getWorlds();
 
-        for(World world : worlds){
-            List<LivingEntity> livingentities = world.getLivingEntities();
-            for(LivingEntity livingentity : livingentities){
-                for(LivingEntityProcessor processor : processors){
-                    if(processor.process(livingentity, totems)) break;
+        for (final World world : worlds) {
+            final List<LivingEntity> livingentities = world.getLivingEntities();
+            for (final LivingEntity livingentity : livingentities) {
+                for (final LivingEntityProcessor processor : processors) {
+                    if (processor.process(livingentity, totems))
+                        break;
                 }
             }
         }

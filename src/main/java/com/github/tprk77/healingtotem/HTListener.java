@@ -1,6 +1,5 @@
 package com.github.tprk77.healingtotem;
 
-
 import java.util.List;
 import java.util.Set;
 
@@ -16,7 +15,7 @@ import com.github.tprk77.healingtotem.totemdao.Totem;
 import com.github.tprk77.healingtotem.totemdao.TotemType;
 
 /**
- *
+ * 
  * @author tim
  */
 public class HTListener implements Listener {
@@ -26,39 +25,39 @@ public class HTListener implements Listener {
     //enum SubstructurePolicy {ALLOWED, REPLACE, NOT_ALLOWED};
     //private final SubstructurePolicy substructurepolicy;
 
-    public HTListener(HTPlugin plugin){
+    public HTListener(HTPlugin plugin) {
         this.plugin = plugin;
         //this.substructurepolicy = SubstructurePolicy.NOT_ALLOWED;
     }
-    
+
     @EventHandler
-    public void onBlockPlace(BlockPlaceEvent event){
-        if(event.isCancelled()) return;
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (event.isCancelled())
+            return;
 
-        String owner = event.getPlayer().getName();
+        final String owner = event.getPlayer().getName();
 
-        Block placedblock = event.getBlockPlaced();
-        List<TotemType> totemtypes = plugin.getTotemManager().getTotemTypes();
+        final Block placedblock = event.getBlockPlaced();
+        final List<TotemType> totemtypes = plugin.getTotemManager().getTotemTypes();
 
-        totembuild:
-        for(TotemType totemtype : totemtypes){
+        totembuild: for (final TotemType totemtype : totemtypes) {
 
-            Totem totem = new Totem(totemtype, placedblock, owner);
-            if(!totem.verifyStructure()) {
+            final Totem totem = new Totem(totemtype, placedblock, owner);
+            if (!totem.verifyStructure()) {
                 continue totembuild;
             }
 
             // check permissions!
-            Player player = event.getPlayer();
-            if(!player.hasPermission("healingtotem.build")){
+            final Player player = event.getPlayer();
+            if (!player.hasPermission("healingtotem.build")) {
                 event.setCancelled(true);
                 player.sendMessage(ChatColor.RED + "You do not have permission to build totems.");
                 return;
             }
 
             // check the number of totems
-            Set<Totem> totemset = plugin.getTotemManager().getTotemsFromPlayer(player);
-            if(totemset != null && totemset.size() >= plugin.getConfigManager().getTotemsPerPlayer() && !player.hasPermission("healingtotem.unlimitedbuild")){
+            final Set<Totem> totemset = plugin.getTotemManager().getTotemsFromPlayer(player);
+            if (totemset != null && totemset.size() >= plugin.getConfigManager().getTotemsPerPlayer() && !player.hasPermission("healingtotem.unlimitedbuild")) {
                 event.setCancelled(true);
                 player.sendMessage(ChatColor.RED + "You have reached the maximum number of totems you can build.");
                 return;
@@ -90,34 +89,33 @@ public class HTListener implements Listener {
              * It's getting a little to complex. KISS.
              */
 
-
-//          if(this.substructurepolicy == SubstructurePolicy.NOT_ALLOWED){
-            for(Block block : totem.getBlocks()){
-                if(plugin.getTotemManager().getTotemsFromBlock(block) != null){
+            //          if(this.substructurepolicy == SubstructurePolicy.NOT_ALLOWED){
+            for (final Block block : totem.getBlocks()) {
+                if (plugin.getTotemManager().getTotemsFromBlock(block) != null) {
                     break totembuild;
                 }
             }
-//          }else if(this.substructurepolicy == SubstructurePolicy.REPLACE){
-//              // TODO this REPLACE code doesn't work / isn't finished
-//              for(Block block : totem.getBlocks()){
-//                  Set<Totem> subtotems = this.plugin.getTotemManager().getTotemsFromBlock(block);
-//                  if(subtotems != null){
-//                      for(Totem subtotem : subtotems){
-//                          this.plugin.getTotemManager().removeTotem(subtotem);
-//                      }
-//                  }
-//              }
-//          }
+            //          }else if(this.substructurepolicy == SubstructurePolicy.REPLACE){
+            //              // TODO this REPLACE code doesn't work / isn't finished
+            //              for(Block block : totem.getBlocks()){
+            //                  Set<Totem> subtotems = this.plugin.getTotemManager().getTotemsFromBlock(block);
+            //                  if(subtotems != null){
+            //                      for(Totem subtotem : subtotems){
+            //                          this.plugin.getTotemManager().removeTotem(subtotem);
+            //                      }
+            //                  }
+            //              }
+            //          }
 
             // lightning strike!
-            if(plugin.getConfigManager().isLightning()){
+            if (plugin.getConfigManager().isLightning()) {
                 placedblock.getWorld().strikeLightningEffect(placedblock.getLocation());
             }
 
             plugin.getTotemManager().addTotem(totem);
             plugin.getTotemManager().saveTotems();
 
-            if(!plugin.getConfigManager().isQuiet()){
+            if (!plugin.getConfigManager().isQuiet()) {
                 player.sendMessage(ChatColor.DARK_AQUA + "A totem has been built.");
             }
 
@@ -126,36 +124,37 @@ public class HTListener implements Listener {
     }
 
     @EventHandler
-    public void onBlockBreak(BlockBreakEvent event){
-        if(event.isCancelled()) return;
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (event.isCancelled())
+            return;
 
-        Block brokenblock = event.getBlock();
-        Set<Totem> totems = plugin.getTotemManager().getTotemsFromBlock(brokenblock);
+        final Block brokenblock = event.getBlock();
+        final Set<Totem> totems = plugin.getTotemManager().getTotemsFromBlock(brokenblock);
 
-        if(totems == null) return;
+        if (totems == null)
+            return;
 
         // check permissions!
-        Player player = event.getPlayer();
-        if(!player.hasPermission("healingtotem.break")){
+        final Player player = event.getPlayer();
+        if (!player.hasPermission("healingtotem.break")) {
             event.setCancelled(true);
             player.sendMessage(ChatColor.RED + "You do not have permission to break totems.");
             return;
         }
 
         // lightning strike!
-        if(plugin.getConfigManager().isLightning()){
+        if (plugin.getConfigManager().isLightning()) {
             brokenblock.getWorld().strikeLightningEffect(brokenblock.getLocation());
         }
 
-        for(Totem totem : totems){
+        for (final Totem totem : totems) {
             // TODO add REPLACE code?
             plugin.getTotemManager().removeTotem(totem);
             plugin.getTotemManager().saveTotems();
         }
 
-        if(!plugin.getConfigManager().isQuiet()){
+        if (!plugin.getConfigManager().isQuiet()) {
             player.sendMessage(ChatColor.DARK_AQUA + "A totem has been destroyed.");
         }
     }
 }
-
