@@ -6,5 +6,7 @@
 * Plugin should only print save messages if not in quiet mode
 
 ## 0.8.4
+* Added config to set the tick update rate of totems
+* Added food support
 * Error messages are provided again.
 * Small changes and code cleanup

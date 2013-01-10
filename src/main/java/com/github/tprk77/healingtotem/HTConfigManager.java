@@ -2,7 +2,6 @@ package com.github.tprk77.healingtotem;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -22,6 +21,8 @@ public class HTConfigManager {
     private final boolean def_quiet = false;
     private final int def_stackedheal = 4;
     private final int def_stackeddamage = 4;
+    private final int def_stackedsatiety = 4;
+    private final int def_stackedhunger = 4;
 
     private int totemsperplayer;
     private int updaterate;
@@ -30,6 +31,8 @@ public class HTConfigManager {
 
     private int playerstackedheal;
     private int playerstackeddamage;
+    private int playerstackedsatiety;
+    private int playerstackedhunger;
 
     private int mobstackedheal;
     private int mobstackeddamage;
@@ -72,6 +75,8 @@ public class HTConfigManager {
 
         playerstackedheal = conf.getInt("player.stackedheal", def_stackedheal);
         playerstackeddamage = conf.getInt("player.stackeddamage", def_stackeddamage);
+        playerstackedsatiety = conf.getInt("player.stackedsatiety", def_stackedsatiety);
+        playerstackedhunger = conf.getInt("player.stackedhunger", def_stackedhunger);
 
         mobstackedheal = conf.getInt("mob.stackedheal", def_stackedheal);
         mobstackeddamage = conf.getInt("mob.stackeddamage", def_stackeddamage);
@@ -88,7 +93,6 @@ public class HTConfigManager {
         final File configfile = new File(plugin.getDataFolder(), filename);
         final YamlConfiguration conf = YamlConfiguration.loadConfiguration(configfile);
 
-        HashMap<String, Object> yamlmap = new HashMap<String, Object>();
         conf.options().copyDefaults(true);
 
         conf.addDefault("totemsperplayer", def_totemsperplayer);
@@ -96,25 +100,19 @@ public class HTConfigManager {
         conf.addDefault("lightning", def_lightning);
         conf.addDefault("quiet", def_quiet);
 
-        yamlmap = new HashMap<String, Object>();
-        yamlmap.put("stackedheal", def_stackedheal);
-        yamlmap.put("stackeddamage", def_stackeddamage);
-        conf.addDefault("player", yamlmap);
+        conf.addDefault("player.stackedheal", def_stackedheal);
+        conf.addDefault("player.stackeddamage", def_stackeddamage);
+        conf.addDefault("player.stackedsatiety", def_stackedsatiety);
+        conf.addDefault("player.stackedhunger", def_stackedhunger);
 
-        yamlmap = new HashMap<String, Object>();
-        yamlmap.put("stackedheal", def_stackedheal);
-        yamlmap.put("stackeddamage", def_stackeddamage);
-        conf.addDefault("mob", yamlmap);
+        conf.addDefault("mob.stackedheal", def_stackedheal);
+        conf.addDefault("mob.stackeddamage", def_stackeddamage);
 
-        yamlmap = new HashMap<String, Object>();
-        yamlmap.put("stackedheal", def_stackedheal);
-        yamlmap.put("stackeddamage", def_stackeddamage);
-        conf.addDefault("tamedwolf", yamlmap);
+        conf.addDefault("tamedwolf.stackedheal", def_stackedheal);
+        conf.addDefault("tamedwolf.stackeddamage", def_stackeddamage);
 
-        yamlmap = new HashMap<String, Object>();
-        yamlmap.put("stackedheal", def_stackedheal);
-        yamlmap.put("stackeddamage", def_stackeddamage);
-        conf.addDefault("angrywolf", yamlmap);
+        conf.addDefault("angrywolf.stackedheal", def_stackedheal);
+        conf.addDefault("angrywolf.stackeddamage", def_stackeddamage);
 
         try {
             conf.save(configfile);
@@ -170,5 +168,13 @@ public class HTConfigManager {
 
     public int getAngryWolfStackedDamage() {
         return angrywolfstackeddamage;
+    }
+
+    public int getPlayerStackedSatiety() {
+        return playerstackedsatiety;
+    }
+
+    public int getPlayerStackedHunger() {
+        return playerstackedhunger;
     }
 }

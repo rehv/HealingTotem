@@ -21,7 +21,8 @@ import com.github.tprk77.healingtotem.util.structure.StructureType;
 public final class TotemType {
 
     private final String name;
-    private final int power;
+    private final int healingpower;
+    private final int foodpower;
     private final int updaterate;
     private final double range;
 
@@ -35,16 +36,17 @@ public final class TotemType {
     private final boolean affectsangrywolves;
 
     public TotemType(String name, int power, double range, StructureType structuretype) {
-        this(name, power, range, HTPlugin.getInstance().getConfigManager().getDefaultUpdateRate(), structuretype, Rotator.NONE, true, true, true, true);
+        this(name, power, 0, range, HTPlugin.getInstance().getConfigManager().getDefaultUpdateRate(), structuretype, Rotator.NONE, true, true, true, true);
     }
 
     public TotemType(String name, int power, double range, StructureType structuretype, Rotator rotator) {
-        this(name, power, range, HTPlugin.getInstance().getConfigManager().getDefaultUpdateRate(), structuretype, rotator, true, true, true, true);
+        this(name, power, 0, range, HTPlugin.getInstance().getConfigManager().getDefaultUpdateRate(), structuretype, rotator, true, true, true, true);
     }
 
-    public TotemType(String name, int power, double range, int updaterate, StructureType structuretype, Rotator rotator, boolean affectsplayers, boolean affectsmobs, boolean affectstamedwolves, boolean affectsangrywolves) {
+    public TotemType(String name, int healingpower, int foodpower, double range, int updaterate, StructureType structuretype, Rotator rotator, boolean affectsplayers, boolean affectsmobs, boolean affectstamedwolves, boolean affectsangrywolves) {
         this.name = name;
-        this.power = power;
+        this.healingpower = healingpower;
+        this.foodpower = foodpower;
         this.range = range;
 
         this.structuretype = structuretype;
@@ -62,20 +64,24 @@ public final class TotemType {
         return name;
     }
 
-    public int getPower() {
-        return power;
+    public int getHealingPower() {
+        return healingpower;
     }
 
-    public int getEffectivePower(LivingEntity entity) {
+    public int getFoodPower() {
+        return foodpower;
+    }
+
+    public int getEffectiveHealingPower(LivingEntity entity) {
         if (entity instanceof Player) {
-            return affectsplayers ? power : 0;
+            return affectsplayers ? healingpower : 0;
         } else if (entity instanceof Monster || entity instanceof Slime || entity instanceof Ghast) {
-            return affectsmobs ? -power : 0;
+            return affectsmobs ? -healingpower : 0;
         } else if (entity instanceof Wolf) {
             if (((Wolf) entity).isTamed()) {
-                return affectstamedwolves ? power : 0;
+                return affectstamedwolves ? healingpower : 0;
             } else if (((Wolf) entity).isAngry()) {
-                return affectsangrywolves ? -power : 0;
+                return affectsangrywolves ? -healingpower : 0;
             } else {
                 return 0;
             }
@@ -122,6 +128,7 @@ public final class TotemType {
 
     @Override
     public String toString() {
-        return "totemtype { name: " + name + ", power: " + power + ", range: " + range + ", affects players: " + affectsplayers + ", affects mobs: " + affectsmobs + ", affects tamed wolves: " + affectstamedwolves + ", affects angry wolves: " + affectsangrywolves + "}";
+        return "totemtype { name: " + name + ", healingpower: " + healingpower + ", foodpower: " + foodpower + ", updaterate: " + updaterate + ", range: " + range + ", affects players: " + affectsplayers + ", affects mobs: " + affectsmobs + ", affects tamed wolves: " + affectstamedwolves
+                + ", affects angry wolves: " + affectsangrywolves + "}";
     }
 }

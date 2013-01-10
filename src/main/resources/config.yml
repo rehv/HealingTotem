@@ -5,6 +5,8 @@ tamedwolf:
 player:
     stackedheal: 4
     stackeddamage: 4
+    stackedsatiety: 4
+    stackedhunger: 4
 mob:
     stackedheal: 4
     stackeddamage: 4

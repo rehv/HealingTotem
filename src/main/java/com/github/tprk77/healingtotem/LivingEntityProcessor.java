@@ -3,8 +3,10 @@ package com.github.tprk77.healingtotem;
 import java.util.List;
 
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.plugin.PluginManager;
 
 import com.github.tprk77.healingtotem.totemdao.Totem;
@@ -14,23 +16,67 @@ public abstract class LivingEntityProcessor {
     private final PluginManager eventcaller;
     private final int stackedheal;
     private final int stackeddamage;
+    private final int stackedsatiety;
+    private final int stackedhunger;
 
     public LivingEntityProcessor(PluginManager eventcaller, int stackedheal, int stackeddamage) {
+        this(eventcaller, stackedheal, stackeddamage, 0, 0);
+    }
+
+    public LivingEntityProcessor(PluginManager eventcaller, int stackedheal, int stackeddamage, int stackedsatiety, int stackedhunger) {
         this.eventcaller = eventcaller;
         this.stackedheal = stackedheal;
         this.stackeddamage = stackeddamage;
+        this.stackedsatiety = stackedsatiety;
+        this.stackedhunger = stackedhunger;
     }
 
     public abstract boolean process(LivingEntity entity, List<Totem> totems);
 
-    protected int sumTotemEffectivePower(LivingEntity entity, List<Totem> totems) {
+    protected int sumTotemEffectiveFoodPower(LivingEntity entity, List<Totem> totems) {
         int power = 0;
         for (final Totem totem : totems) {
             if (totem.inRange(entity)) {
-                power += totem.getEffectivePower(entity);
+                power += totem.getEffectiveFoodPower(entity);
             }
         }
         return power;
+    }
+
+    protected int sumTotemEffectiveHealingPower(LivingEntity entity, List<Totem> totems) {
+        int power = 0;
+        for (final Totem totem : totems) {
+            if (totem.inRange(entity)) {
+                power += totem.getEffectiveHealingPower(entity);
+            }
+        }
+        return power;
+    }
+
+    protected void applyFood(Player player, int power) {
+        if (power > stackedsatiety) {
+            power = stackedsatiety;
+        } else if (power < -stackedhunger) {
+            power = -stackedhunger;
+        }
+
+        int foodlevel = player.getFoodLevel();
+
+        if (foodlevel + power > 20) {
+            foodlevel = 20;
+        } else if (foodlevel + power < 0) {
+            foodlevel = 0;
+        } else {
+            foodlevel += power;
+        }
+
+        final FoodLevelChangeEvent foodEvent = new FoodLevelChangeEvent(player, foodlevel);
+        eventcaller.callEvent(foodEvent);
+        if (foodEvent.isCancelled()) {
+            return;
+        }
+
+        player.setFoodLevel(foodlevel);
     }
 
     protected void applyHeal(LivingEntity entity, int power) {

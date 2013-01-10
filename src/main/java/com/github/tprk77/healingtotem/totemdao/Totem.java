@@ -42,13 +42,22 @@ public class Totem extends Structure {
         }
     }
 
-    public int getEffectivePower(LivingEntity livingentity) {
+    public int getEffectiveHealingPower(LivingEntity livingentity) {
 
         if (isPowered()) {
             return 0;
         }
 
-        return totemtype.getEffectivePower(livingentity);
+        return totemtype.getEffectiveHealingPower(livingentity);
+    }
+
+    public int getEffectiveFoodPower(LivingEntity livingentity) {
+
+        if (isPowered()) {
+            return 0;
+        }
+
+        return totemtype.getFoodPower();
     }
 
     private boolean isPowered() {

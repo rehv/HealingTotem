@@ -11,6 +11,8 @@ permissions:
       healingtotem.break: true
       healingtotem.heal: true
       healingtotem.damage: true
+      healingtotem.satiety: true
+      healingtotem.hunger: true
   healingtotem.build:
     description: Allows user to build totems
     default: true
@@ -22,6 +24,12 @@ permissions:
     default: true
   healingtotem.damage:
     description: Allows user to be damaged by totems
+    default: true
+  healingtotem.satiety:
+    description: Allows user to be satiated by totems
+    default: true
+  healingtotem.hunger:
+    description: Allows user to get hungered by totems
     default: true
   healingtotem.unlimitedbuild:
     description: Allows user to build an unlimited number of totems

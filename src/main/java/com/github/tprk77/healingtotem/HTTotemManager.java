@@ -419,7 +419,8 @@ public class HTTotemManager {
     }
 
     private void saveYamlTotemType(TotemType totemType, ConfigurationSection totemSection) {
-        totemSection.addDefault("power", totemType.getPower());
+        totemSection.addDefault("healingpower", totemType.getHealingPower());
+        totemSection.addDefault("foodpower", totemType.getFoodPower());
         totemSection.addDefault("range", totemType.getRange());
         totemSection.addDefault("updaterate", totemType.getUpdateRate());
         totemSection.addDefault("rotator", totemType.getRotator().toString());
@@ -471,10 +472,16 @@ public class HTTotemManager {
     private TotemType loadYamlTotemType(ConfigurationSection totemSection) {
         final String name = totemSection.getName();
 
-        final int power = totemSection.getInt("power", Integer.MIN_VALUE);
-        if (power == Integer.MIN_VALUE) {
-            plugin.getLogger().warning("TotemType " + totemSection.getName() + "'s power is not set.");
+        final int healingpower = totemSection.getInt("healingpower", Integer.MIN_VALUE);
+        if (healingpower == Integer.MIN_VALUE) {
+            plugin.getLogger().warning("TotemType " + totemSection.getName() + "'s healingpower is not set, setting to 0.");
             return null;
+        }
+
+        int foodpower = totemSection.getInt("foodpower", Integer.MIN_VALUE);
+        if (foodpower == Integer.MIN_VALUE) {
+            plugin.getLogger().warning("TotemType " + totemSection.getName() + "'s foodpower is not set, setting to 0.");
+            foodpower = 0;
         }
 
         final double range = totemSection.getDouble("range");
@@ -523,7 +530,7 @@ public class HTTotemManager {
         final boolean affectsTamedWolves = totemSection.getBoolean("affectsTamedWolves", true);
         final boolean affectsAngryWolves = totemSection.getBoolean("affectsAngryWolves", true);
 
-        return new TotemType(name, power, range, updaterate, structureType, rotator, affectsPlayers, affectsMobs, affectsTamedWolves, affectsAngryWolves);
+        return new TotemType(name, healingpower, foodpower, range, updaterate, structureType, rotator, affectsPlayers, affectsMobs, affectsTamedWolves, affectsAngryWolves);
     }
 
     private StructureType loadYamlStructure(ConfigurationSection structureSection) {
