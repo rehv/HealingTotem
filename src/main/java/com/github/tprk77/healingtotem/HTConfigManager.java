@@ -17,12 +17,14 @@ public class HTConfigManager {
     private final String filename = "config.yml";
 
     private final int def_totemsperplayer = 100;
+    private final int def_updaterate = 20;
     private final boolean def_lightning = true;
     private final boolean def_quiet = false;
     private final int def_stackedheal = 4;
     private final int def_stackeddamage = 4;
 
     private int totemsperplayer;
+    private int updaterate;
     private boolean lightning;
     private boolean quiet;
 
@@ -63,7 +65,8 @@ public class HTConfigManager {
         final File configfile = new File(plugin.getDataFolder(), filename);
         final YamlConfiguration conf = YamlConfiguration.loadConfiguration(configfile);
 
-        totemsperplayer = conf.getInt("totemsperplayer", totemsperplayer);
+        totemsperplayer = conf.getInt("totemsperplayer", def_totemsperplayer);
+        updaterate = conf.getInt("updaterate", def_updaterate);
         lightning = conf.getBoolean("lightning", def_lightning);
         quiet = conf.getBoolean("quiet", def_quiet);
 
@@ -89,6 +92,7 @@ public class HTConfigManager {
         conf.options().copyDefaults(true);
 
         conf.addDefault("totemsperplayer", def_totemsperplayer);
+        conf.addDefault("updaterate", def_updaterate);
         conf.addDefault("lightning", def_lightning);
         conf.addDefault("quiet", def_quiet);
 
@@ -130,6 +134,10 @@ public class HTConfigManager {
 
     public int getTotemsPerPlayer() {
         return totemsperplayer;
+    }
+
+    public int getDefaultUpdateRate() {
+        return updaterate;
     }
 
     public int getPlayerStackedHeal() {

@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.Wolf;
 
+import com.github.tprk77.healingtotem.HTPlugin;
 import com.github.tprk77.healingtotem.util.structure.Rotator;
 import com.github.tprk77.healingtotem.util.structure.StructureType;
 
@@ -21,6 +22,7 @@ public final class TotemType {
 
     private final String name;
     private final int power;
+    private final int updaterate;
     private final double range;
 
     private final StructureType structuretype;
@@ -33,14 +35,14 @@ public final class TotemType {
     private final boolean affectsangrywolves;
 
     public TotemType(String name, int power, double range, StructureType structuretype) {
-        this(name, power, range, structuretype, Rotator.NONE, true, true, true, true);
+        this(name, power, range, HTPlugin.getInstance().getConfigManager().getDefaultUpdateRate(), structuretype, Rotator.NONE, true, true, true, true);
     }
 
     public TotemType(String name, int power, double range, StructureType structuretype, Rotator rotator) {
-        this(name, power, range, structuretype, rotator, true, true, true, true);
+        this(name, power, range, HTPlugin.getInstance().getConfigManager().getDefaultUpdateRate(), structuretype, rotator, true, true, true, true);
     }
 
-    public TotemType(String name, int power, double range, StructureType structuretype, Rotator rotator, boolean affectsplayers, boolean affectsmobs, boolean affectstamedwolves, boolean affectsangrywolves) {
+    public TotemType(String name, int power, double range, int updaterate, StructureType structuretype, Rotator rotator, boolean affectsplayers, boolean affectsmobs, boolean affectstamedwolves, boolean affectsangrywolves) {
         this.name = name;
         this.power = power;
         this.range = range;
@@ -53,6 +55,7 @@ public final class TotemType {
         this.affectsmobs = affectsmobs;
         this.affectstamedwolves = affectstamedwolves;
         this.affectsangrywolves = affectsangrywolves;
+        this.updaterate = updaterate;
     }
 
     public String getName() {
@@ -83,6 +86,10 @@ public final class TotemType {
 
     public double getRange() {
         return range;
+    }
+
+    public int getUpdateRate() {
+        return updaterate;
     }
 
     public StructureType getStructureType() {

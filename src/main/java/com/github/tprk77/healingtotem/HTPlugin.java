@@ -8,12 +8,13 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public final class HTPlugin extends JavaPlugin {
 
+    private static HTPlugin instance = null;
     private HTConfigManager configManager;
     private HTTotemManager totemManager;
-    private HTHealerRunnable healerRunnable;
 
     @Override
     public void onEnable() {
+        instance = this;
 
         getServer().getPluginManager().registerEvents(new HTListener(this), this);
 
@@ -23,14 +24,12 @@ public final class HTPlugin extends JavaPlugin {
         totemManager = new HTTotemManager(this);
         totemManager.loadTotemTypesOrDefault();
         totemManager.loadTotems();
-
-        healerRunnable = new HTHealerRunnable(this);
-        healerRunnable.schedule();
     }
 
     @Override
     public void onDisable() {
-        healerRunnable.cancel();
+        totemManager.cancelAllTasks();
+        instance = null;
     }
 
     public HTTotemManager getTotemManager() {
@@ -39,5 +38,9 @@ public final class HTPlugin extends JavaPlugin {
 
     public HTConfigManager getConfigManager() {
         return configManager;
+    }
+
+    public static HTPlugin getInstance() {
+        return instance;
     }
 }

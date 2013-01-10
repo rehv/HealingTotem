@@ -13,3 +13,4 @@ angrywolf:
     stackeddamage: 4
 quiet: false
 totemsperplayer: 100
+updaterate: 20
